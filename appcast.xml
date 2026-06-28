@@ -8,7 +8,7 @@
             <sparkle:version>1.0</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/sandrophoto/smart-timer/releases/download/v1.0/SmartTimer-1.0.zip" length="1703673" type="application/octet-stream" sparkle:edSignature="biQoQbMkjrqfnekM3R71+Nk2x0tkyRWOTssMFWHBQobGV2iyM+4nWV6TUl8ylJyoM6+ZmO2zf2OgzRHkis54Cg=="/>
+            <enclosure url="https://github.com/sandrophoto/backup-zen-dodo/releases/download/v1.0/BackupZenDodo-1.0.zip" length="1743939" type="application/octet-stream" sparkle:edSignature="iwu5ISbwizb9HQSZqVE8Xeb8uzEGixQOSsv8+9hUiAvNnhAStCVS1GMaojbkzTLaKEAngY/xqDf4XLgNasN5BQ=="/>
         </item>
     </channel>
 </rss>
