@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup Zen Dodo Pro Plus 3000 — STUPIDS STUDIO</title>
+<meta name="description" content="Un minuteur intelligent pour macOS : attend une condition (Time Machine, téléchargements, app, SwissTransfer) puis éteint ou met le Mac en veille. Et va dormir l'esprit tranquille.">
+<link rel="icon" href="icon.png">
+<meta property="og:title" content="Backup Zen Dodo Pro Plus 3000">
+<meta property="og:description" content="Attend une condition, puis éteint ou endort ton Mac. Tout seul.">
+<meta property="og:image" content="icon.png">
+<style>
+:root{
+  --blue:#2b8cff; --indigo:#6d4bff; --violet:#a14bff;
+  --red:#ff2d4a; --orange:#ff9d00;
+  --ink:#eef1ff; --muted:#9aa3c8;
+  --glass:rgba(255,255,255,.045);
+  --stroke:rgba(255,255,255,.09);
+  --bg:#06070e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,system-ui,sans-serif;
+  background:var(--bg); color:var(--ink); overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+}
+a{color:inherit;text-decoration:none}
+
+/* ---------- Animated backdrop ---------- */
+.bg-fixed{position:fixed;inset:0;z-index:-3;overflow:hidden;background:
+  radial-gradient(1200px 700px at 70% -10%, rgba(109,75,255,.18), transparent 60%),
+  radial-gradient(900px 600px at 10% 10%, rgba(43,140,255,.14), transparent 60%),
+  var(--bg);}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55;mix-blend-mode:screen;animation:float 18s ease-in-out infinite}
+.blob.b1{width:520px;height:520px;background:radial-gradient(circle,#2b8cff,transparent 70%);top:-120px;left:-80px}
+.blob.b2{width:600px;height:600px;background:radial-gradient(circle,#a14bff,transparent 70%);top:20%;right:-150px;animation-delay:-6s}
+.blob.b3{width:480px;height:480px;background:radial-gradient(circle,#6d4bff,transparent 70%);bottom:-140px;left:30%;animation-delay:-11s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-50px) scale(1.12)}66%{transform:translate(-40px,40px) scale(.92)}}
+.grid-overlay{position:fixed;inset:0;z-index:-2;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:54px 54px;
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);}
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+/* ---------- Nav ---------- */
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  background:rgba(8,9,18,.45);border-bottom:1px solid var(--stroke)}
+.nav-brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.2px}
+.nav-brand img{width:30px;height:30px;border-radius:8px;box-shadow:0 4px 18px rgba(109,75,255,.5)}
+.nav-brand span{font-size:15px}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:11px;font-size:14px;font-weight:600;
+  border:1px solid var(--stroke);background:var(--glass);transition:.25s;cursor:pointer;white-space:nowrap}
+.btn:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08)}
+.btn-primary{position:relative;border:none;color:#fff;overflow:hidden;
+  background:linear-gradient(120deg,var(--blue),var(--indigo),var(--violet));
+  background-size:200% 100%;box-shadow:0 8px 30px rgba(109,75,255,.45);animation:shimmer 6s linear infinite}
+@keyframes shimmer{to{background-position:200% 0}}
+.btn-primary::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(110deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:sweep 4.5s ease-in-out infinite}
+@keyframes sweep{0%,60%{left:-120%}100%{left:160%}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;text-align:center;padding:90px 24px 70px;max-width:980px;margin:0 auto}
+.hero-icon{width:148px;height:148px;border-radius:34px;margin:0 auto 30px;display:block;
+  box-shadow:0 30px 70px rgba(43,140,255,.4),0 0 0 1px rgba(255,255,255,.08) inset;
+  animation:bob 6s ease-in-out infinite;position:relative}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hero-icon-wrap{position:relative;display:inline-block}
+.hero-icon-wrap::before{content:"";position:absolute;inset:-30px;border-radius:50%;
+  background:radial-gradient(circle,rgba(109,75,255,.55),transparent 65%);filter:blur(20px);z-index:-1;animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);
+  padding:6px 13px;border-radius:999px;border:1px solid var(--stroke);background:var(--glass);margin-bottom:22px}
+.dot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 10px #39d98a;animation:blink 2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.4}}
+h1{font-size:clamp(38px,7vw,72px);font-weight:800;letter-spacing:-1.5px;line-height:1.02;margin-bottom:8px}
+.grad{background:linear-gradient(120deg,#7fb4ff,#a98bff,#c98bff,#7fb4ff);background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 8s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+.hero p.tag{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:640px;margin:20px auto 34px}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-lg{padding:15px 28px;font-size:16px;border-radius:14px}
+.req{margin-top:22px;font-size:13px;color:var(--muted)}
+
+/* ---------- Sections ---------- */
+section{position:relative;max-width:1080px;margin:0 auto;padding:60px 24px}
+.eyebrow{text-align:center;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px}
+h2{text-align:center;font-size:clamp(28px,4.5vw,42px);font-weight:800;letter-spacing:-1px;margin-bottom:14px}
+.sub{text-align:center;color:var(--muted);max-width:580px;margin:0 auto 48px;font-size:16px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{position:relative;padding:26px;border-radius:20px;border:1px solid var(--stroke);
+  background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  overflow:hidden;transition:transform .3s,border-color .3s}
+.card::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;left:var(--mx,50%);top:var(--my,50%);
+  transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(109,75,255,.16),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.2)}
+.card:hover::before{opacity:1}
+.card .ic{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:24px;margin-bottom:16px;
+  background:linear-gradient(135deg,rgba(43,140,255,.25),rgba(161,75,255,.25));border:1px solid var(--stroke)}
+.card h3{font-size:18px;font-weight:700;margin-bottom:7px}
+.card p{font-size:14.5px;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;counter-reset:s}
+.step{position:relative;padding:26px 24px 24px;border-radius:20px;border:1px solid var(--stroke);background:var(--glass);backdrop-filter:blur(12px)}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:-18px;left:22px;width:42px;height:42px;border-radius:12px;
+  display:grid;place-items:center;font-weight:800;font-size:19px;color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 8px 22px rgba(109,75,255,.5)}
+.step h3{margin:14px 0 7px;font-size:17px}
+.step p{font-size:14px;color:var(--muted)}
+
+/* triggers pills */
+.pills{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.pill{display:flex;align-items:center;gap:10px;padding:13px 20px;border-radius:14px;border:1px solid var(--stroke);
+  background:var(--glass);backdrop-filter:blur(10px);font-weight:600;font-size:15px;transition:.25s}
+.pill:hover{transform:translateY(-4px) scale(1.03);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
+.pill .e{font-size:20px}
+
+/* download band */
+.band{position:relative;text-align:center;margin:40px auto;max-width:1080px;padding:64px 28px;border-radius:28px;overflow:hidden;
+  border:1px solid var(--stroke);background:linear-gradient(135deg,rgba(43,140,255,.12),rgba(161,75,255,.12))}
+.band::after{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% 0%,rgba(161,75,255,.25),transparent 70%);pointer-events:none}
+.band h2{margin-bottom:10px}
+.note{margin-top:20px;font-size:13.5px;color:var(--muted);max-width:520px;margin-inline:auto}
+.note b{color:var(--ink)}
+
+/* footer */
+footer{position:relative;text-align:center;padding:56px 24px 46px;border-top:1px solid var(--stroke);margin-top:40px}
+.studio{font-size:26px;font-weight:900;letter-spacing:.5px;font-family:"SF Pro Rounded",system-ui;
+  background:linear-gradient(90deg,var(--red),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0 4px}
+.foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:18px 0;font-size:14px;color:var(--muted)}
+.foot-links a{transition:.2s}.foot-links a:hover{color:var(--ink)}
+.copy{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+@media(max-width:600px){nav{padding:12px 16px}.nav-brand span{display:none}.hero{padding:60px 18px 50px}}
+</style>
+</head>
+<body>
+
+<div class="bg-fixed"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="grid-overlay"></div>
+<canvas id="particles"></canvas>
+
+<nav>
+  <a class="nav-brand" href="#top"><img src="icon.png" alt=""><span>Backup Zen Dodo Pro Plus 3000</span></a>
+  <div class="nav-actions">
+    <a class="btn" href="https://github.com/sandrophoto/backup-zen-dodo" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="https://github.com/sandrophoto/backup-zen-dodo/releases/latest">Télécharger</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-icon-wrap"><img class="hero-icon" src="icon.png" alt="Icône de l'app"></div>
+  <div class="chip"><span class="dot"></span> macOS 12+ · Intel & Apple Silicon</div>
+  <h1>Backup Zen Dodo<br><span class="grad">Pro Plus 3000</span></h1>
+  <p class="tag">Attend la fin de ce qui compte — sauvegarde, téléchargement, upload — puis <b>éteint ou endort ton Mac tout seul</b>. Lance, et va dormir l'esprit tranquille. 🌙</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary btn-lg" href="https://github.com/sandrophoto/backup-zen-dodo/releases/latest">↓ Télécharger gratuitement</a>
+    <a class="btn btn-lg" href="#how">Comment ça marche</a>
+  </div>
+  <div class="req">Gratuit · Universel · Mises à jour automatiques intégrées</div>
+</header>
+
+<section id="features">
+  <div class="eyebrow reveal">Ce qu'il sait faire</div>
+  <h2 class="reveal">Un minuteur, mais intelligent</h2>
+  <p class="sub reveal">Il ne compte pas les minutes — il <b>surveille des conditions réelles</b> et agit quand elles sont remplies.</p>
+  <div class="grid">
+    <div class="card reveal"><div class="ic">🗂️</div><h3>Déclencheurs multiples</h3><p>Fin de sauvegarde Time Machine, fin des téléchargements, fermeture d'une app, ou fin d'un upload SwissTransfer.</p></div>
+    <div class="card reveal d1"><div class="ic">⏻</div><h3>Éteindre ou veille</h3><p>Choisis l'action finale : extinction complète du Mac, ou mise en veille douce.</p></div>
+    <div class="card reveal d2"><div class="ic">☕</div><h3>Anti-veille</h3><p>Empêche le Mac de s'endormir tant que la condition surveillée n'est pas terminée.</p></div>
+    <div class="card reveal"><div class="ic">🔄</div><h3>Mises à jour auto</h3><p>Sparkle intégré : l'app se met à jour toute seule, en toute sécurité, signée et vérifiée.</p></div>
+    <div class="card reveal d1"><div class="ic">🌙</div><h3>Barre de menus</h3><p>Discrète, toujours là. Lance la surveillance et oublie-la — un compte à rebours te laisse annuler avant l'action.</p></div>
+    <div class="card reveal d2"><div class="ic">⚡</div><h3>Universel & léger</h3><p>Binaire natif Intel + Apple Silicon, sans dépendance. Rapide, propre, autonome.</p></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="eyebrow reveal">En trois temps</div>
+  <h2 class="reveal">Lance. Surveille. Dors.</h2>
+  <p class="sub reveal">Aucune configuration compliquée. Trois clics et c'est parti.</p>
+  <div class="steps">
+    <div class="step reveal"><h3>Choisis la condition</h3><p>Coche un ou plusieurs déclencheurs à attendre. Time Machine, téléchargements, une app, SwissTransfer…</p></div>
+    <div class="step reveal d1"><h3>Choisis l'action</h3><p>Éteindre le Mac, ou le mettre en veille une fois la condition remplie.</p></div>
+    <div class="step reveal d2"><h3>Va dormir</h3><p>L'app veille à ta place. Quand tout est fini, elle agit — après un compte à rebours annulable.</p></div>
+  </div>
+</section>
+
+<section id="triggers">
+  <div class="eyebrow reveal">Les déclencheurs</div>
+  <h2 class="reveal">Il attend exactement la bonne chose</h2>
+  <p class="sub reveal">Surveille-en un seul, ou combine-les : l'action ne se lance que lorsque tout est terminé.</p>
+  <div class="pills">
+    <div class="pill reveal"><span class="e">🗂️</span> Fin de Time Machine</div>
+    <div class="pill reveal d1"><span class="e">⬇️</span> Fin des téléchargements</div>
+    <div class="pill reveal d2"><span class="e">❌</span> Fermeture d'une app</div>
+    <div class="pill reveal d3"><span class="e">⬆️</span> Fin d'un upload SwissTransfer</div>
+  </div>
+</section>
+
+<div class="band reveal">
+  <h2>Prêt à dormir tranquille ?</h2>
+  <p class="sub" style="margin-bottom:26px">Télécharge Backup Zen Dodo Pro Plus 3000, gratuitement.</p>
+  <a class="btn btn-primary btn-lg" href="https://github.com/sandrophoto/backup-zen-dodo/releases/latest">↓ Télécharger pour macOS</a>
+  <p class="note">Au <b>premier lancement</b> : clic droit sur l'app → <b>Ouvrir</b> (app non signée par l'App Store). Ensuite, double-clic normal. Time Machine doit être configuré pour ce déclencheur.</p>
+</div>
+
+<footer>
+  <div class="eyebrow" style="margin-bottom:6px">Réalisé par</div>
+  <div class="studio">STUPIDS STUDIO</div>
+  <div style="font-size:13.5px;color:var(--muted)">Codé par Sandro avec Claude</div>
+  <div class="foot-links">
+    <a href="https://stupidstudio.eu" target="_blank" rel="noopener">Site web</a>
+    <a href="mailto:sandro@tigre.paris">Contact</a>
+    <a href="https://github.com/sandrophoto/backup-zen-dodo" target="_blank" rel="noopener">Code source</a>
+    <a href="https://github.com/sandrophoto/backup-zen-dodo/releases" target="_blank" rel="noopener">Versions</a>
+  </div>
+  <div class="copy">© 2026 STUPIDS STUDIO — Tous droits réservés.</div>
+</footer>
+
+<script>
+/* ---- Particles ---- */
+(function(){
+  const c=document.getElementById('particles'),x=c.getContext('2d');let w,h,p=[];
+  function size(){w=c.width=innerWidth;h=c.height=innerHeight}
+  function init(){p=[];const n=Math.min(90,Math.floor(w*h/16000));
+    for(let i=0;i<n;i++)p.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.8+.5})}
+  function tick(){x.clearRect(0,0,w,h);
+    for(const a of p){a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>w)a.vx*=-1;if(a.y<0||a.y>h)a.vy*=-1;
+      x.beginPath();x.arc(a.x,a.y,a.r,0,7);x.fillStyle='rgba(160,180,255,.6)';x.fill()}
+    for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const a=p[i],b=p[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle='rgba(120,140,255,'+(.14*(1-d/120))+')';x.stroke()}}
+    requestAnimationFrame(tick)}
+  size();init();tick();addEventListener('resize',()=>{size();init()});
+})();
+
+/* ---- Reveal on scroll ---- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.14});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---- Cursor glow on cards ---- */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();
+    card.style.setProperty('--mx',(e.clientX-r.left)+'px');card.style.setProperty('--my',(e.clientY-r.top)+'px')});
+});
+
+/* ---- Parallax hero icon ---- */
+const icon=document.querySelector('.hero-icon');
+addEventListener('mousemove',e=>{const dx=(e.clientX/innerWidth-.5)*16,dy=(e.clientY/innerHeight-.5)*16;
+  if(icon)icon.style.transform=`translate(${dx}px,${dy}px)`});
+</script>
+</body>
+</html>
